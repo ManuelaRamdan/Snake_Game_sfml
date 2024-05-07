@@ -77,9 +77,7 @@ Si bien CMake intentará seleccionar un generador adecuado por defecto, algunos 
 Aquí tienes algunos recursos útiles si deseas aprender más sobre CMake:
 
 - [Cómo Usar CMake Sin el Dolor Agonizante - Parte 1](https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-1.html)
-- [Cómo Usar CMake Sin el Dolor Agon
-
-izante - Parte 2](https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-2.html)
+- [Cómo Usar CMake Sin el Dolor Agonizante - Parte 2](https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-2.html)
 - [Serie de YouTube Mejor CMake por Jefferon Amstutz](https://www.youtube.com/playlist?list=PL8i3OhJb4FNV10aIZ8oF0AA46HgA2ed8g)
 
 ## Licencia
