@@ -11,7 +11,7 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 set(SOURCE_DIR src)
-file(GLOB SOURCE_FILES ${SOURCE_DIR}/*.cpp)
+file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ${SOURCE_DIR}/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics)
