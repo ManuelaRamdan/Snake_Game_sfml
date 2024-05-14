@@ -8,7 +8,7 @@ const unsigned int ALTO_VENT = 600;
 const unsigned int FRAMERATE = 60;
 
 // lee los eventos (clicks, posición del mouse, redimensión de la ventana, etc)
-void read_events(RenderWindow &window);
+void lee_eventos(RenderWindow &window);
 
 // Parametros del cuadrado que rebota en la ventana:
 const float VELOCIDAD = 4.5f;
@@ -29,9 +29,9 @@ bool colision_con_ventana(RectangleShape &r, borde_t borde);
 
 int main() {
   // Se crea la ventana de ANCHO_VENT x ALTO_VENT con el nombre "UTN-INSPT SFML"
-  RenderWindow window = RenderWindow{{ANCHO_VENT, ALTO_VENT}, "UTN-INSPT SFML"};
+  RenderWindow ventana = RenderWindow({ANCHO_VENT, ALTO_VENT}, "UTN-INSPT SFML");
   // Se establece un limite de FRAMERATE x segundo
-  window.setFramerateLimit(FRAMERATE);
+  ventana.setFramerateLimit(FRAMERATE);
 
   // Se define un cuadrado de LADO_CUADRADO de lado
   RectangleShape cuadrado = RectangleShape({LADO_CUADRADO, LADO_CUADRADO});
@@ -39,16 +39,16 @@ int main() {
   cuadrado.setFillColor(Color{255, 0, 128});
 
   // Los diferenciales de movimiento (cuanto avanza el cuadrado) en los ejes x,y
-  float diff_x, diff_y;
+  Vector2 diff = {VELOCIDAD, VELOCIDAD};
 
   /*
    * Loop principal del juego: mientras la ventana esté abierta...
    */
-  while (window.isOpen()) {
+  while (ventana.isOpen()) {
     /**
      *  Lectura de los eventos y teclas por parte del usuario
      */
-    read_events(window);
+    lee_eventos(ventana);
 
     /*
      *  Lógica del juego
@@ -56,35 +56,35 @@ int main() {
     // Cambia el sentido del movimiento en X si se detecta una colisión con el
     // borde de la ventana
     if (colision_con_ventana(cuadrado, IZQUIERDO)) {
-      diff_x = VELOCIDAD;
+      diff.x = VELOCIDAD;
     } else if (colision_con_ventana(cuadrado, DERECHO)) {
-      diff_x = -VELOCIDAD;
+      diff.x = -VELOCIDAD;
     }
     // Idem anterior, pero en el eje Y
     if (colision_con_ventana(cuadrado, SUPERIOR)) {
-      diff_y = VELOCIDAD;
+      diff.y = VELOCIDAD;
     } else if (colision_con_ventana(cuadrado, INFERIOR)) {
-      diff_y = -VELOCIDAD;
+      diff.y = -VELOCIDAD;
     }
 
     // Se desplaza el cuadrado en diff_x y diff_y
-    cuadrado.move(diff_x, diff_y);
+    cuadrado.move(diff);
 
     /*
      *  Actualizar el dibujo de la ventana
      */
     // Siempre se borra la pantalla anterior
-    window.clear();
+    ventana.clear();
 
     // Se dibujan los elementos:
-    window.draw(cuadrado);
+    ventana.draw(cuadrado);
 
     // Se muestra la pantalla con los elemnetos dibujados sobre ella:
-    window.display();
+    ventana.display();
   }
 }
 
-void read_events(RenderWindow &window) {
+void lee_eventos(RenderWindow &window) {
   // Se "leen" los eventos y se guardan en event.
   Event event = Event();
   // Se recorren los eventos hasta que ya no hayan más
