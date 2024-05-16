@@ -36,7 +36,7 @@ int main() {
   // Se define un cuadrado de LADO_CUADRADO de lado
   RectangleShape cuadrado = RectangleShape({LADO_CUADRADO, LADO_CUADRADO});
   // Color RGB (Rojo, Verde, Azul) entre 0 y 255
-  cuadrado.setFillColor(Color{255, 0, 128});
+  cuadrado.setFillColor(Color(255, 0, 128));
 
   // Los diferenciales de movimiento (cuanto avanza el cuadrado) en los ejes x,y
   Vector2 diff = {VELOCIDAD, VELOCIDAD};
