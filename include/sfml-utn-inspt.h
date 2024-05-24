@@ -16,6 +16,7 @@
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <cmath> // Para utilizar funciones matemáticas
 #include <fstream> // Para el fácil uso de archivos (para persistir datos de ser necesario)
 #include <iostream> // cout, cin y demás flujos
 #include <string>   // clase std::string
