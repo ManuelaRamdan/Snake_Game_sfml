@@ -8,7 +8,7 @@ const unsigned int ALTO_VENT = 600;
 const unsigned int FRAMERATE = 60;
 
 // lee los eventos (clicks, posición del mouse, redimensión de la ventana, etc)
-void lee_eventos(RenderWindow &window);
+void leer_eventos(RenderWindow &window);
 
 // Parametros del cuadrado que rebota en la ventana:
 const float VELOCIDAD = 4.5f;
@@ -48,7 +48,7 @@ int main() {
     /**
      *  Lectura de los eventos y teclas por parte del usuario
      */
-    lee_eventos(ventana);
+    leer_eventos(ventana);
 
     /*
      *  Lógica del juego
@@ -84,7 +84,7 @@ int main() {
   }
 }
 
-void lee_eventos(RenderWindow &window) {
+void leer_eventos(RenderWindow &window) {
   // Se "leen" los eventos y se guardan en event.
   Event event = Event();
   // Se recorren los eventos hasta que ya no hayan más
