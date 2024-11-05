@@ -8,7 +8,7 @@ const unsigned int ALTO_VENT = 600;
 const unsigned int FRAMERATE = 60;
 
 // lee los eventos (clicks, posición del mouse, redimensión de la ventana, etc)
-void leer_eventos(RenderWindow &window);
+void leer_eventos(RenderWindow &ventana);
 
 // Parametros del cuadrado que rebota en la ventana:
 const float VELOCIDAD = 4.5f;
@@ -25,7 +25,7 @@ enum borde_t { SUPERIOR, INFERIOR, IZQUIERDO, DERECHO };
  * @return true si ha colisionado el rectangulo `r` con el `borde` especificado
  * @return false si no ha colicionado o se pasa un `borde` inválido.
  */
-bool colision_con_ventana(RectangleShape &r, borde_t borde);
+bool colision_con_ventana(const FloatRect &r, borde_t borde);
 
 int main() {
   // Se crea la ventana de ANCHO_VENT x ALTO_VENT con el nombre "UTN-INSPT SFML"
@@ -55,15 +55,15 @@ int main() {
      */
     // Cambia el sentido del movimiento en X si se detecta una colisión con el
     // borde de la ventana
-    if (colision_con_ventana(cuadrado, IZQUIERDO)) {
+    if (colision_con_ventana(cuadrado.getGlobalBounds(), IZQUIERDO)) {
       diff.x = VELOCIDAD;
-    } else if (colision_con_ventana(cuadrado, DERECHO)) {
+    } else if (colision_con_ventana(cuadrado.getGlobalBounds(), DERECHO)) {
       diff.x = -VELOCIDAD;
     }
     // Idem anterior, pero en el eje Y
-    if (colision_con_ventana(cuadrado, SUPERIOR)) {
+    if (colision_con_ventana(cuadrado.getGlobalBounds(), SUPERIOR)) {
       diff.y = VELOCIDAD;
-    } else if (colision_con_ventana(cuadrado, INFERIOR)) {
+    } else if (colision_con_ventana(cuadrado.getGlobalBounds(), INFERIOR)) {
       diff.y = -VELOCIDAD;
     }
 
@@ -84,28 +84,28 @@ int main() {
   }
 }
 
-void leer_eventos(RenderWindow &window) {
+void leer_eventos(RenderWindow &ventana) {
   // Se "leen" los eventos y se guardan en event.
   Event event = Event();
   // Se recorren los eventos hasta que ya no hayan más
-  while (window.pollEvent(event)) {
+  while (ventana.pollEvent(event)) {
     if (event.type == Event::Closed) {
       // Si el usuario tocó la [X] para cerra la ventana:
-      window.close();
+      ventana.close();
     }
   }
 }
 
-bool colision_con_ventana(RectangleShape &r, borde_t borde) {
+bool colision_con_ventana(const FloatRect &r, borde_t borde) {
   switch (borde) {
   case SUPERIOR:
-    return r.getGlobalBounds().top <= 0;
+    return r.top <= 0;
   case INFERIOR:
-    return (r.getGlobalBounds().top + r.getGlobalBounds().height) >= ALTO_VENT;
+    return (r.top + r.height) >= ALTO_VENT;
   case IZQUIERDO:
-    return r.getGlobalBounds().left <= 0;
+    return r.left <= 0;
   case DERECHO:
-    return (r.getGlobalBounds().left + r.getGlobalBounds().width) >= ANCHO_VENT;
+    return (r.left + r.width) >= ANCHO_VENT;
   }
   return false;
 }
