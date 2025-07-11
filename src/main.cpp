@@ -33,10 +33,10 @@ class rectacgleSnake : public sf::RectangleShape
 public:
     rectacgleSnake()
     {
-        //texturaCuerpo.loadFromFile(PATH + "cuerpoHorizontal.png");
+        // texturaCuerpo.loadFromFile(PATH + "cuerpoHorizontal.png");
         setSize(Vector2f(20, 20));
-        //setTexture(&texturaCuerpo);
-        // setFillColor(Color(94, 126, 255));
+        // setTexture(&texturaCuerpo);
+        //  setFillColor(Color(94, 126, 255));
     }
 };
 
@@ -95,6 +95,8 @@ int main()
     RectangleShape arbusto(Vector2f(100, 100));
     arbusto.setPosition(100, 100);
     arbusto.setTexture(&arbustoText);
+
+    Vector2f arbustoPosInicial = arbusto.getPosition();
     //-------------------------------------------------------------------------
     // cargar textura de la serpiente
 
@@ -277,11 +279,14 @@ int main()
                     }
                 }
             }
+
             ventana.clear();
             ventana.draw(sprite);
             ventana.draw(textoPerdiste);
             ventana.display();
             // continue;
+
+            arbusto.setPosition(arbustoPosInicial);
         }
         // cuando el juego empieza, muestre la pantalla de inicio
         if (!juegoIniciado)
@@ -348,11 +353,13 @@ int main()
         {
             float x; // evita los bordes izquierdo y derecho
             float y;
+            float anchoManzana = forma.getRadius() * 2;
+            float altoManzana = forma.getRadius() * 2;
 
             do
             {
-                x = 20 + rand() % (ANCHO_VENT - 40); // evita los bordes izquierdo y derecho
-                y = 20 + rand() % (ALTO_VENT - 40);  // evita los bordes superior e inferior
+                x = 20 + rand() % int(ANCHO_VENT - anchoManzana - 40);// evita los bordes izquierdo y derecho
+                y = 20 + rand() % int(ALTO_VENT - altoManzana - 40);// evita los bordes superior e inferior
                 forma.setPosition(x, y);
 
                 cout << "Posición de la manzana: ("
