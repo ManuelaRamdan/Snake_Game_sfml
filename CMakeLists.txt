@@ -15,6 +15,7 @@ file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ${SOURCE_DIR}/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-audio)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 

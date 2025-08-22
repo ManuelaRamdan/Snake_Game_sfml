@@ -62,6 +62,8 @@ int posCurva(Vector2f anterior, Vector2f actual, Vector2f siguiente);
 bool colisionConCuerpoSnake(vector<rectacgleSnake> &snake);
 void cargarTextura(Direccion &direccion, vector<rectacgleSnake> &snake);
 
+void recolocarManzana(CircleShape &manzana,const RectangleShape &arbusto,const vector<rectacgleSnake> &snake,const RectangleShape &bordeIzq,const RectangleShape &bordeDer,const RectangleShape &bordeInf,const RectangleShape &bordeSup);
+
 int main()
 {
     rectacgleSnake rs;
@@ -76,6 +78,17 @@ int main()
     // creamos la ventana
     RenderWindow ventana = RenderWindow({ANCHO_VENT, ALTO_VENT}, "Unidad 1 - Taller de Videojuegos");
     ventana.setFramerateLimit(FRAMERATE);
+    //-------------------------------------------------------------------------
+    // sonido de cuando come la manzana
+    sf::SoundBuffer bufferComer;
+    if (!bufferComer.loadFromFile("../recursos/comeManzana.wav"))
+    {
+        std::cerr << "Error al cargar el buffer" << std::endl;
+    }
+
+    sf::Sound sonidoCome;
+    sonidoCome.setBuffer(bufferComer);
+    sonidoCome.setVolume(100.0);
     //-------------------------------------------------------------------------
     // creamos la "manzana"
     Texture manzana;
@@ -209,9 +222,12 @@ int main()
     int cantFrame = 8;
 
     //-------------------------------------------------------------------------
+    bool terminoJuego = false;
+    //-------------------------------------------------------------------------
     // se abre la ventana
     while (ventana.isOpen())
     {
+
         if (contFrame == 60)
         {
             contFrame = 0;
@@ -221,73 +237,61 @@ int main()
             contFrame++;
         }
 
-        Event evento = Event();
+        if (terminoJuego)
+        {
+            ventana.close();
+        }
+
+        Event evento;
         while (ventana.pollEvent(evento))
         {
-            if (evento.type == Event::Closed)
+            if (evento.type == sf::Event::Closed)
             {
-                // Si el usuario toc´o la [X] para cerra la ventana:
                 ventana.close();
             }
+            else if (evento.type == sf::Event::KeyPressed && evento.key.code == sf::Keyboard::Space)
+            {
+                if (!juego) // si está en "game over"
+                {
+                    // reset flags
+                    juegoIniciado = true;
+                    juego = true;
+                    chocoConBorde = false;
+                    direccion = RIGHT;
+                    puntos = 0;
+
+                    // reset snake a 3 segmentos
+                    while (snake.size() > 3)
+                        snake.pop_back();
+
+                    int x = ANCHO_VENT / 2;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        snake[i].setPosition(x - (i * 20), 180);
+
+                        if (i == 0)
+                            snake[i].setTexture(&texturaCabeza);
+                        else if (i == 2)
+                            snake[i].setTexture(&texturaCola);
+                        else
+                            snake[i].setTexture(&texturaCuerpo);
+                    }
+
+                    // reset arbusto
+                    arbusto.setPosition(arbustoPosInicial);
+                }
+            }
         }
-        //-------------------------------------------------------------------------
 
-        while (!juego)
+        if (!juego)
         {
-            Event evento = Event();
-            while (ventana.pollEvent(evento))
-            {
-                if (evento.type == Event::Closed)
-                {
-                    // Si el usuario toc´o la [X] para cerra la ventana:
-                    ventana.close();
-                }
-            }
-
-            if (Keyboard::isKeyPressed(Keyboard::Space))
-            {
-                ventana.clear();
-                juegoIniciado = true;
-                puntos = 0;
-                juego = true;
-                chocoConBorde = false;
-                direccion = RIGHT;
-
-                for (int i = snake.size(); i > 3; i--)
-                {
-                    snake.pop_back();
-                }
-
-                x = (ANCHO_VENT / 2);
-
-                for (int i = 0; i < 3; i++)
-                {
-
-                    snake[i].setPosition(x - (i * 20), 180);
-
-                    if (i == 0)
-                    {
-                        snake[i].setTexture(&texturaCabeza); // Textura de la cabeza
-                    }
-                    else if (i == 2)
-                    {
-                        snake[i].setTexture(&texturaCola); // Textura de la cola
-                    }
-                    else
-                    {
-                        snake[i].setTexture(&texturaCuerpo); // Textura del cuerpo
-                    }
-                }
-            }
-
             ventana.clear();
             ventana.draw(sprite);
             ventana.draw(textoPerdiste);
             ventana.display();
-            // continue;
-
-            arbusto.setPosition(arbustoPosInicial);
+            continue;
         }
+
         // cuando el juego empieza, muestre la pantalla de inicio
         if (!juegoIniciado)
         {
@@ -351,22 +355,8 @@ int main()
         // movimiento aleatorio de la "manzana"
         if (snake[0].getGlobalBounds().intersects(forma.getGlobalBounds()))
         {
-            float x; // evita los bordes izquierdo y derecho
-            float y;
-            float anchoManzana = forma.getRadius() * 2;
-            float altoManzana = forma.getRadius() * 2;
-
-            do
-            {
-                x = 20 + rand() % int(ANCHO_VENT - anchoManzana - 40);// evita los bordes izquierdo y derecho
-                y = 20 + rand() % int(ALTO_VENT - altoManzana - 40);// evita los bordes superior e inferior
-                forma.setPosition(x, y);
-
-                cout << "Posición de la manzana: ("
-                     << forma.getPosition().x << ", "
-                     << forma.getPosition().y << ")" << endl;
-
-            } while (colisionConBordesForma(forma, bordeIzquierdo, bordeDerecho, bordeInferior, bordeSuperior));
+            // Reposicionar manzana de forma segura
+            recolocarManzana(forma, arbusto, snake, bordeIzquierdo, bordeDerecho, bordeInferior, bordeSuperior);
 
             /* int posVecTextCola;
             posVecTextCola = posCola(snake[snake.size() - 1].getPosition(), snake[snake.size() - 2].getPosition());
@@ -392,6 +382,7 @@ int main()
             // Agregar el nuevo segmento a la serpiente
             snake.push_back(nuevoSegmento);
 
+            sonidoCome.play();
             // Incrementar los puntos
             puntos++;
             textoPuntos.setString("Puntos: " + to_string(puntos));
@@ -505,9 +496,7 @@ int main()
                 forma.setPosition(x, y);
                 forma.setPosition(rand() % ANCHO_VENT + 20, rand() % ALTO_VENT);
 
-                cout << "Posición de la manzana: ("
-                     << forma.getPosition().x << ", "
-                     << forma.getPosition().y << ")" << endl;
+                cout << "Posición de la manzana: (" << forma.getPosition().x << ", " << forma.getPosition().y << ")" << endl;
             } while (colisionConArbustoManzana(arbusto, forma) ||
                      colisionConBordesForma(forma, bordeIzquierdo, bordeDerecho, bordeInferior, bordeSuperior) || colisionManzanaSnake(forma, snake));
         }
@@ -834,4 +823,27 @@ bool colisionManzanaSnake(const CircleShape &manzana, const vector<rectacgleSnak
         }
     }
     return false;
+}
+
+void recolocarManzana(CircleShape &manzana,
+                      const RectangleShape &arbusto,
+                      const vector<rectacgleSnake> &snake,
+                      const RectangleShape &bordeIzq,
+                      const RectangleShape &bordeDer,
+                      const RectangleShape &bordeInf,
+                      const RectangleShape &bordeSup)
+{
+    float x, y;
+    float ancho = manzana.getRadius() * 2;
+    float alto = manzana.getRadius() * 2;
+
+    do
+    {
+        x = 20 + rand() % int(ANCHO_VENT - ancho - 40);
+        y = 20 + rand() % int(ALTO_VENT - alto - 40);
+        manzana.setPosition(x, y);
+    } while (
+        colisionConBordesForma(manzana, bordeIzq, bordeDer, bordeInf, bordeSup) ||
+        colisionManzanaSnake(manzana, snake) ||
+        colisionConArbustoManzana(arbusto, manzana));
 }
