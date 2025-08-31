@@ -33,10 +33,7 @@ class rectacgleSnake : public sf::RectangleShape
 public:
     rectacgleSnake()
     {
-        // texturaCuerpo.loadFromFile(PATH + "cuerpoHorizontal.png");
         setSize(Vector2f(20, 20));
-        // setTexture(&texturaCuerpo);
-        //  setFillColor(Color(94, 126, 255));
     }
 };
 
@@ -62,7 +59,7 @@ int posCurva(Vector2f anterior, Vector2f actual, Vector2f siguiente);
 bool colisionConCuerpoSnake(vector<rectacgleSnake> &snake);
 void cargarTextura(Direccion &direccion, vector<rectacgleSnake> &snake);
 
-void recolocarManzana(CircleShape &manzana,const RectangleShape &arbusto,const vector<rectacgleSnake> &snake,const RectangleShape &bordeIzq,const RectangleShape &bordeDer,const RectangleShape &bordeInf,const RectangleShape &bordeSup);
+void recolocarManzana(CircleShape &manzana, const RectangleShape &arbusto, const vector<rectacgleSnake> &snake, const RectangleShape &bordeIzq, const RectangleShape &bordeDer, const RectangleShape &bordeInf, const RectangleShape &bordeSup);
 
 int main()
 {
@@ -80,13 +77,13 @@ int main()
     ventana.setFramerateLimit(FRAMERATE);
     //-------------------------------------------------------------------------
     // sonido de cuando come la manzana
-    sf::SoundBuffer bufferComer;
-    if (!bufferComer.loadFromFile("../recursos/comeManzana.wav"))
+    SoundBuffer bufferComer;
+    if (!bufferComer.loadFromFile("../recursos/comeManzana.mp3"))
     {
         std::cerr << "Error al cargar el buffer" << std::endl;
     }
 
-    sf::Sound sonidoCome;
+    Sound sonidoCome;
     sonidoCome.setBuffer(bufferComer);
     sonidoCome.setVolume(100.0);
     //-------------------------------------------------------------------------
@@ -124,7 +121,7 @@ int main()
     // creamos  el "cuerpo" de la serpiente
     vector<rectacgleSnake> snake;
     int x = (ANCHO_VENT / 2);
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
     {
 
         // square.setFillColor(Color::Green);
@@ -210,7 +207,7 @@ int main()
     // Los diferenciales de movimiento (cuanto avanza el cuadrado) en los ejes x,y
     Vector2 diff = {VELOCIDAD, VELOCIDAD};
     //-------------------------------------------------------------------------
-    int contFrame;
+    int contFrame = 0;
     //-------------------------------------------------------------------------
     Texture texture;
     !texture.loadFromFile(PATH + "f3.png") && cout << "error en carga de imagen desde disco";
@@ -261,17 +258,17 @@ int main()
                     puntos = 0;
 
                     // reset snake a 3 segmentos
-                    while (snake.size() > 3)
+                    while (snake.size() > 4)
                         snake.pop_back();
 
                     int x = ANCHO_VENT / 2;
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         snake[i].setPosition(x - (i * 20), 180);
 
                         if (i == 0)
                             snake[i].setTexture(&texturaCabeza);
-                        else if (i == 2)
+                        else if (i == 3)
                             snake[i].setTexture(&texturaCola);
                         else
                             snake[i].setTexture(&texturaCuerpo);
@@ -358,29 +355,25 @@ int main()
             // Reposicionar manzana de forma segura
             recolocarManzana(forma, arbusto, snake, bordeIzquierdo, bordeDerecho, bordeInferior, bordeSuperior);
 
-            /* int posVecTextCola;
-            posVecTextCola = posCola(snake[snake.size() - 1].getPosition(), snake[snake.size() - 2].getPosition());
-            rs.setTexture(&textCola[posVecTextCola]);
-            // square.setFillColor(Color::Green);
-            rs.setPosition(snake[snake.size() - 1].getPosition());
-            snake[snake.size() - 1].setTexture(snake[snake.size() - 2].getTexture());
-            snake.push_back(rs); */
-
             // Crear nuevo segmento
             rectacgleSnake nuevoSegmento;
+
+            // Asignar la textura de cola al nuevo segmento
+            int posVecTextCola = posCola(snake[snake.size() - 2].getPosition(), snake[snake.size() - 3].getPosition());
+            nuevoSegmento.setTexture(&textCola[posVecTextCola]);
+
 
             // Posicionar el nuevo segmento donde estaba el anterior (cola actual)
             nuevoSegmento.setPosition(snake[snake.size() - 1].getPosition());
 
-            // Asignar la textura de cola al nuevo segmento
-            int posVecTextCola = posCola(snake[snake.size() - 1].getPosition(), snake[snake.size() - 2].getPosition());
-            nuevoSegmento.setTexture(&textCola[posVecTextCola]);
 
             // Asignar la textura de cuerpo al segmento que era la cola
-            snake[snake.size() - 1].setTexture(&texturaCuerpo);
+            snake[snake.size() -1].setTexture(&texturaCuerpo);
 
             // Agregar el nuevo segmento a la serpiente
             snake.push_back(nuevoSegmento);
+
+
 
             sonidoCome.play();
             // Incrementar los puntos
@@ -409,7 +402,7 @@ int main()
             puntos = 0;
             textoPuntos.setString("Puntos: " + to_string(puntos));
 
-            for (int i = 3; i < snake.size(); i++)
+            for (int i = 4; i < snake.size(); i++)
             {
                 snake.pop_back();
             }
@@ -496,7 +489,6 @@ int main()
                 forma.setPosition(x, y);
                 forma.setPosition(rand() % ANCHO_VENT + 20, rand() % ALTO_VENT);
 
-                cout << "Posición de la manzana: (" << forma.getPosition().x << ", " << forma.getPosition().y << ")" << endl;
             } while (colisionConArbustoManzana(arbusto, forma) ||
                      colisionConBordesForma(forma, bordeIzquierdo, bordeDerecho, bordeInferior, bordeSuperior) || colisionManzanaSnake(forma, snake));
         }
@@ -517,7 +509,7 @@ int main()
             ventana.draw(cuadrado);
         }*/
 
-        for (int i = 0; i < snake.size(); i++)
+        for (int i = 0; i < snake.size() - 1; i++)
         {
             ventana.draw(snake[i]);
         }
@@ -560,70 +552,28 @@ void moverSnake(Direccion &direccion, vector<rectacgleSnake> &snake)
     {
     case UP:
         cabezaPos.y -= MOVIMIENTO;
-        /*         texturaCabeza.loadFromFile(PATH + "cabezaArriba.png");
-                snake[0].setTexture(&texturaCabeza); */
 
         break;
     case DOWN:
         cabezaPos.y += MOVIMIENTO;
-        /*         texturaCabeza.loadFromFile(PATH + "cabezaAbajo.png");
-                snake[0].setTexture(&texturaCabeza); */
 
         break;
     case LEFT:
         cabezaPos.x -= MOVIMIENTO;
-        /*         texturaCabeza.loadFromFile(PATH + "cabezaIzq.png");
-                snake[0].setTexture(&texturaCabeza); */
 
         break;
     case RIGHT:
         cabezaPos.x += MOVIMIENTO;
-        /*         texturaCabeza.loadFromFile(PATH + "cabezaDerecha.png");
-                snake[0].setTexture(&texturaCabeza); */
 
         break;
     }
-
-    /*     textDoblar[0].loadFromFile(PATH + "cuerpo_upRight.png");
-        textDoblar[1].loadFromFile(PATH + "cuerpo_upLeft.png");
-        textDoblar[2].loadFromFile(PATH + "cuerpo_downRight.png");
-        textDoblar[3].loadFromFile(PATH + "cuerpo_downLeft.png"); */
 
     for (int i = snake.size() - 1; i > 0; --i)
     {
 
         Vector2f posAnterior = snake[i - 1].getPosition();
-        /*         if ((posAnterior.x != snake[i].getPosition().x))
-                {
-                    snake[i].setTexture(&texCuerpoHorizontal);
-                }
-                else if ((posAnterior.y != snake[i].getPosition().y))
-                {
-                    snake[i].setTexture(&texCuerpoVertical);
-                } */
-
         snake[i].setPosition(posAnterior);
     }
-
-    /*     for (int i = snake.size() - 2; i > 0; --i)
-        {
-
-            Vector2f posAnterior = snake[i + 1].getPosition();
-            Vector2f posActual = snake[i].getPosition();
-            Vector2f posSiguiente = snake[i - 1].getPosition();
-            if (posAnterior.x != posSiguiente.x && posAnterior.y != posSiguiente.y)
-            {
-                int curvaPos = posCurva(posAnterior, posActual, posSiguiente);
-                if (curvaPos != -1)
-                {
-                    snake[i].setTexture(&textDoblar[curvaPos]);
-                }
-            }
-        }
-
-        int posVecTextCola;
-        posVecTextCola = posCola(snake[snake.size() - 1].getPosition(), snake[snake.size() - 2].getPosition());
-        snake[snake.size() - 1].setTexture(&textCola[posVecTextCola]); */
 
     snake[0].setPosition(cabezaPos);
     cargarTextura(direccion, snake);
@@ -797,8 +747,8 @@ void cargarTextura(Direccion &direccion, vector<rectacgleSnake> &snake)
     }
 
     int posVecTextCola;
-    posVecTextCola = posCola(snake[snake.size() - 1].getPosition(), snake[snake.size() - 2].getPosition());
-    snake[snake.size() - 1].setTexture(&textCola[posVecTextCola]);
+    posVecTextCola = posCola(snake[snake.size() - 2].getPosition(), snake[snake.size() - 3].getPosition());
+    snake[snake.size() - 2].setTexture(&textCola[posVecTextCola]);
 }
 
 bool colisionArbustoSnake(const RectangleShape &arbusto, const vector<rectacgleSnake> &snake)
