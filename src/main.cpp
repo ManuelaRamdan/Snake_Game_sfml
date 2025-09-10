@@ -199,10 +199,6 @@ int main()
     bool derecha = true, abajo = true;
     bool mostrarCuadrado = false;
     //-------------------------------------------------------------------------
-    // Se define un cuadrado de LADO_CUADRADO de lado
-    // RectangleShape cuadrado = RectangleShape({LADO_CUADRADO, LADO_CUADRADO});
-    // Color RGB (Rojo, Verde, Azul) entre 0 y 255
-    // cuadrado.setFillColor(Color(255, 0, 128));
 
     // Los diferenciales de movimiento (cuanto avanza el cuadrado) en los ejes x,y
     Vector2 diff = {VELOCIDAD, VELOCIDAD};
@@ -217,7 +213,7 @@ int main()
 
     //-------------------------------------------------------------------------
     int cantFrame = 8;
-
+    int delay = 6;
     //-------------------------------------------------------------------------
     bool terminoJuego = false;
     //-------------------------------------------------------------------------
@@ -276,6 +272,7 @@ int main()
 
                     // reset arbusto
                     arbusto.setPosition(arbustoPosInicial);
+                    delay = 6;
                 }
             }
         }
@@ -342,7 +339,7 @@ int main()
             direccion = nuevaDireccion;
         }
 
-        if (haMovido && contFrame % 6 == 0)
+        if (haMovido && contFrame % delay == 0)
         {
             moverSnake(direccion, snake);
             // haMovido = false; // Resetear la bandera
@@ -379,6 +376,10 @@ int main()
             // Incrementar los puntos
             puntos++;
             textoPuntos.setString("Puntos: " + to_string(puntos));
+
+            delay = max(2, 6 - (puntos / 20));
+            //cout << "Delay: " << delay << endl;
+
         }
         //-------------------------------------------------------------------------
         // que pasa si el snake choca con el borde
@@ -433,45 +434,7 @@ int main()
             seMovio = true;
         }
         //-------------------------------------------------------------------------
-        // que se agregue otro bloque que se mueva
-        /*if (puntos >= 15 && puntos <= 30)
-        {
-            cuadrado.move(xCuadrado, yCuadrado);
 
-            if (cuadrado.getPosition().y == (ALTO_VENT / 2))
-            {
-                if (abajo)
-                {
-                    xCuadrado *= -1;
-                    derecha = false;
-                }
-                else
-                {
-                    xCuadrado *= 1;
-                    derecha = false;
-                }
-            }
-
-            if (cuadrado.getPosition().x == (ANCHO_VENT / 2))
-            {
-                if (derecha)
-                {
-                    yCuadrado *= 1;
-                    abajo = false;
-                }
-                else
-                {
-                    yCuadrado *= -1;
-                    abajo = true;
-                }
-            }
-
-            mostrarCuadrado = true;
-        }
-        if (puntos < 15 || puntos > 30)
-        {
-            mostrarCuadrado = false;
-        }*/
 
         //-------------------------------------------------------------------------
         // que la "manzana" no este donde esta el arbusto
@@ -504,10 +467,7 @@ int main()
         ventana.draw(arbusto);
         ventana.draw(textoPuntos);
 
-        /*if (mostrarCuadrado)
-        {
-            ventana.draw(cuadrado);
-        }*/
+
 
         for (int i = 0; i < snake.size() - 1; i++)
         {
